@@ -1,0 +1,16 @@
+# mac
+.DS_Store
+
+# SQL
+*.sql
+
+# CakePHP
+app/tmp/*
+!app/tmp/empty
+
+# logs
+*.log
+
+# database config
+app/Config/database.php
+
