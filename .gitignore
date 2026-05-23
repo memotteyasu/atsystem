@@ -14,3 +14,4 @@ app/tmp/*
 # database config
 app/Config/database.php
 
+*.sql
