@@ -1,0 +1,19 @@
+.error-message {
+	padding: 8px;
+	/*  margin-bottom: 20px; */
+	border: 1px solid transparent;
+	border-radius: 4px;
+	font-weight: bold;
+	color: #8a6d3b;
+	background-color: #fcf8e3;
+	border-color: #faebcc;
+}
+.host0501{
+	background:#ffe4c4!important;
+}
+.host0502{
+	background:#b0e0e6!important;
+}
+.host0503{
+	background:#98fb98!important;
+}
