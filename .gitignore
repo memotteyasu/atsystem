@@ -3,6 +3,8 @@
 
 # SQL
 *.sql
+!app/Config/Schema/add_users_displayno.sql
+!app/Config/Schema/create_employeeschedules.sql
 
 # CakePHP
 app/tmp/*
@@ -15,3 +17,5 @@ app/tmp/*
 app/Config/database.php
 
 *.sql
+!app/Config/Schema/add_users_displayno.sql
+!app/Config/Schema/create_employeeschedules.sql

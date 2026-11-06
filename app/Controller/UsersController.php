@@ -193,6 +193,7 @@ class UsersController extends AppController {
 				'User.entrydate',
 			    'User.enddate',
 			    'User.syain_cd',
+			    'User.displayno',
 			    'Branchmaster.branchname',
 				'User.roudouflg',
 				'Branchmaster.id'
@@ -205,6 +206,7 @@ class UsersController extends AppController {
 			],
 			'limit' => 10,
 			'order' => [
+				'User.displayno' => 'asc',
 				'User.syain_cd' => 'asc'
 			],
 			'recursive' => 0,

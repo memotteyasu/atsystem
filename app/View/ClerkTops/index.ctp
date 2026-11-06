@@ -21,6 +21,68 @@
 						<?php echo $this->Flash->render(); ?>
 					</li>
 				</ul>
+		<style>
+			.clerk-weekly-schedule-controls { margin-bottom: 8px; white-space: nowrap; }
+			.clerk-weekly-schedule-controls select { display: inline-block; width: auto; min-width: 150px; vertical-align: middle; }
+			.clerk-schedule-management-link a { width: auto; padding: 2px 6px; }
+			.clerk-weekly-schedule { width: 100%; min-width: 680px; font-size: 11px; margin-bottom: 0; table-layout: fixed; }
+			.clerk-weekly-schedule th, .clerk-weekly-schedule td { padding: 4px 3px; text-align: center; vertical-align: middle; }
+			.clerk-weekly-schedule .employee-name { width: 16%; font-size: 12px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+			.clerk-weekly-schedule .schedule-cell-link { display: block; min-height: 17px; color: inherit; text-decoration: none; }
+			.clerk-weekly-schedule .schedule-cell-link:hover { background-color: #f5f5f5; text-decoration: none; }
+			.clerk-weekly-schedule .schedule-entry { display: block; margin: 1px 0; padding: 1px 2px; border: 2px solid; background-color: transparent; color: #333; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.clerk-weekly-schedule .saturday { background: #f5f9ff; }
+			.clerk-weekly-schedule .sunday { background: #fff6f6; }
+		</style>
+		<div class="row">
+			<div class="box col-md-12">
+				<div class="box-inner">
+					<div class="box-header well">
+						<h2><i class="glyphicon glyphicon-calendar"></i> 事務員スケジュール（<?php echo h($weekStart->format('n/j')); ?>〜<?php echo h($weekEnd->format('n/j')); ?>）</h2>
+						<div class="box-icon clerk-schedule-management-link"><a href="<?php echo $this->Html->url(array('controller' => 'HostSchedules', 'action' => 'index')); ?>" class="btn btn-xs btn-default">予定管理</a></div>
+					</div>
+					<div class="box-content">
+						<form action="<?php echo $this->Html->url(array('controller' => 'ClerkTops', 'action' => 'index')); ?>" method="get" class="clerk-weekly-schedule-controls">
+							<label for="week-offset">表示期間&nbsp;</label>
+							<select name="week_offset" id="week-offset" class="form-control input-sm" onchange="this.form.submit()">
+								<?php foreach ($weekOptions as $value => $label): ?>
+									<option value="<?php echo h($value); ?>"<?php echo (int)$value === (int)$weekOffset ? ' selected' : ''; ?>><?php echo h($label); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</form>
+						<div class="table-responsive">
+							<table class="table table-bordered table-condensed clerk-weekly-schedule">
+								<thead><tr>
+									<th class="employee-name">従業員</th>
+									<?php foreach ($weekDates as $weekDate): ?>
+										<th class="<?php echo $weekDate['weekday'] === 6 ? 'saturday' : ($weekDate['weekday'] === 7 ? 'sunday' : ''); ?>"><?php echo h($weekDate['label']); ?></th>
+									<?php endforeach; ?>
+								</tr></thead>
+								<tbody>
+									<?php foreach ($scheduleUsers as $scheduleUser): ?>
+										<tr>
+											<td class="employee-name" title="<?php echo h($scheduleUser['User']['usernameK']); ?>"><?php echo h($scheduleUser['User']['usernameK']); ?></td>
+											<?php foreach ($weekDates as $weekDate): ?>
+												<?php $calendarEntries = isset($calendarEntriesByUserAndDate[$scheduleUser['User']['id']][$weekDate['date']]) ? $calendarEntriesByUserAndDate[$scheduleUser['User']['id']][$weekDate['date']] : array(); ?>
+												<?php $scheduleAddUrl = $this->Html->url(array('controller' => 'HostSchedules', 'action' => 'add', '?' => array('users_id' => $scheduleUser['User']['id'], 'scheduledate' => $weekDate['date']))); ?>
+												<td class="<?php echo empty($calendarEntries) ? ($weekDate['weekday'] === 6 ? 'saturday' : ($weekDate['weekday'] === 7 ? 'sunday' : '')) : ''; ?>">
+													<a href="<?php echo $scheduleAddUrl; ?>" class="schedule-cell-link" title="予定を登録">
+														<?php foreach ($calendarEntries as $calendarEntry): ?>
+															<span class="schedule-entry" style="border-color:<?php echo h($calendarEntry['color']); ?>;" title="<?php echo h($calendarEntry['name']); ?>"><?php echo h($calendarEntry['name']); ?></span>
+														<?php endforeach; ?>
+													</a>
+												</td>
+											<?php endforeach; ?>
+										</tr>
+									<?php endforeach; ?>
+									<?php if (empty($scheduleUsers)): ?><tr><td colspan="8">表示できる在籍従業員がいません。</td></tr><?php endif; ?>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="row">
 		    <div class="box col-md-12">
 		        <div class="box-inner">

@@ -64,6 +64,12 @@
 								</div>
 							</div>
 							<div class="form-group">
+								<label class="col-sm-2 control-label">表示順</label>
+								<div class="col-sm-3">
+									<?php echo $this->Form->input('displayno',['label'=>false, 'div'=>false, 'class'=>'form-control', 'type'=>'number', 'min'=>0]); ?>
+								</div>
+							</div>
+							<div class="form-group">
 								<label class="col-sm-2 control-label">会社</label>
 								<div class="col-sm-3">
 									<?php echo $this->Form->input('kaisyas_id',['label'=>false,'div'=>false, 'class'=>'form-control', 'empty'=>'選択してください']); ?>

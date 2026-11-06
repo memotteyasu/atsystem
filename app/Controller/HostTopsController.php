@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class HostTopsController extends AppController {
 	public $layout = 'layout_host';
     public $helpers = array('Html','Form');
-    public $uses = array('Personalmessage','Gyoumumessage','Employeeholiday','Receptionmessage','Calendarmaster');
+    public $uses = array('Personalmessage','Gyoumumessage','Employeeholiday','Receptionmessage','Calendarmaster','User','Schedule');
 
     public function beforeFilter(){
     	parent::beforeFilter();
@@ -32,6 +32,88 @@ class HostTopsController extends AppController {
  */
 	public function index() {
 	    $date = new DateTime();
+	    $weekOffset = isset($this->request->query['week_offset']) ? (int)$this->request->query['week_offset'] : 0;
+	    $weekOffset = max(0, min($weekOffset, 11));
+	    $weekStart = new DateTime('today');
+	    $weekStart->modify('+' . ($weekOffset * 7) . ' days');
+	    $weekEnd = clone $weekStart;
+	    $weekEnd->modify('+6 days');
+	    $weekDates = array();
+	    $weekOptions = array();
+	    $weekdayLabels = array('月', '火', '水', '木', '金', '土', '日');
+	    for ($i = 0; $i < 12; $i++) {
+		$optionStart = new DateTime('today');
+		$optionStart->modify('+' . ($i * 7) . ' days');
+		$optionEnd = clone $optionStart;
+		$optionEnd->modify('+6 days');
+		$weekOptions[$i] = $optionStart->format('n/j') . '〜' . $optionEnd->format('n/j');
+	    }
+	    for ($i = 0; $i < 7; $i++) {
+		$weekDate = clone $weekStart;
+		$weekDate->modify('+' . $i . ' days');
+		$weekDates[] = array(
+			'date' => $weekDate->format('Y-m-d'),
+			'label' => $weekDate->format('n/j') . '（' . $weekdayLabels[$weekDate->format('N') - 1] . '）',
+			'weekday' => (int)$weekDate->format('N')
+		);
+	    }
+
+	    $scheduleUsers = $this->User->find('all', array(
+		'fields' => array('User.id', 'User.usernameK', 'User.displayno'),
+		'conditions' => array(
+			'User.kaisyas_id' => $this->Auth->user('kaisyas_id'),
+			'User.zaisekiflg' => 0,
+			'User.rolemasters_id <=' => 28
+		),
+		'order' => array('User.displayno' => 'asc', 'User.usernameK' => 'asc'),
+		'recursive' => -1
+	    ));
+
+	    $weekSchedules = $this->Employeeholiday->find('all', array(
+		'fields' => array('Employeeholiday.users_id', 'Employeeholiday.applicationdate', 'Flgmaster.flgname', 'Flgmaster2.flgname'),
+		'conditions' => array(
+			'User.kaisyas_id' => $this->Auth->user('kaisyas_id'),
+			'User.rolemasters_id <=' => 28,
+			'Employeeholiday.applicationdate >=' => $weekStart->format('Y-m-d'),
+			'Employeeholiday.applicationdate <=' => $weekEnd->format('Y-m-d'),
+			'Employeeholiday.flgmasters_id2' => 13,
+			'Employeeholiday.flgmasters_id' => array(41, 42)
+		),
+		'recursive' => 0
+	    ));
+	    $calendarEntriesByUserAndDate = array();
+	    foreach ($weekSchedules as $weekSchedule) {
+		$userId = $weekSchedule['Employeeholiday']['users_id'];
+		$scheduleDate = $weekSchedule['Employeeholiday']['applicationdate'];
+		$scheduleName = $weekSchedule['Flgmaster2']['flgname'];
+		if ($weekSchedule['Flgmaster']['flgname'] === '申請中') {
+			$scheduleName .= '（申請中）';
+		}
+		$calendarEntriesByUserAndDate[$userId][$scheduleDate][] = array(
+			'name' => $scheduleName,
+			'color' => '#d9edf7'
+		);
+	    }
+
+	    $employeeSchedules = $this->Schedule->find('all', array(
+		'fields' => array('Schedule.users_id', 'Schedule.scheduledate', 'Schedule.schedulename', 'Schedule.displaycolor'),
+		'conditions' => array(
+			'User.kaisyas_id' => $this->Auth->user('kaisyas_id'),
+			'User.rolemasters_id <=' => 28,
+			'Schedule.scheduledate >=' => $weekStart->format('Y-m-d'),
+			'Schedule.scheduledate <=' => $weekEnd->format('Y-m-d'),
+			'Schedule.delflg' => 0
+		),
+		'recursive' => 0
+	    ));
+	    foreach ($employeeSchedules as $employeeSchedule) {
+		$userId = $employeeSchedule['Schedule']['users_id'];
+		$scheduleDate = $employeeSchedule['Schedule']['scheduledate'];
+		$calendarEntriesByUserAndDate[$userId][$scheduleDate][] = array(
+			'name' => $employeeSchedule['Schedule']['schedulename'],
+			'color' => $employeeSchedule['Schedule']['displaycolor']
+		);
+	    }
 
 	    $receptionmessages = $this->Receptionmessage->find('all',[
 	        'fields'=>['id','receptioncomment','receptiondate','personalname'],
@@ -111,7 +193,7 @@ class HostTopsController extends AppController {
 		    ]
 		]);
 
-		$this->set(compact('personalmessages','gyoumumessages','employeeholidays','receptionmessages','calendarmasters'));
+		$this->set(compact('personalmessages','gyoumumessages','employeeholidays','receptionmessages','calendarmasters','weekStart','weekEnd','weekDates','weekOptions','weekOffset','scheduleUsers','calendarEntriesByUserAndDate'));
 	}
 
 	public function addpersonalmessage(){

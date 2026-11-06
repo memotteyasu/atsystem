@@ -103,6 +103,7 @@
 								<table class="table table-striped table-bordered bootstrap-datatable">
 									<thead>
 										<tr>
+											<th><?php echo $this->Paginator->sort('displayno', '表示順'); ?></th>
 											<th><?php echo $this->Paginator->sort('syain_cd', '社番'); ?></th>
 											<th><?php echo $this->Paginator->sort('usernameK', '名前'); ?></th>
 											<th><?php echo $this->Paginator->sort('username', 'ユーザーID'); ?></th>
@@ -117,6 +118,7 @@
 										<?php foreach ($users as $user): ?>
 										<?php //echo debug($user['Employeepoint']); ?>
 										<tr>
+											<td class="text-right"><?php echo h($user['User']['displayno']); ?></td>
 											<td class="text-right"><?php echo ($user['User']['syain_cd']); ?></td>
 											<td><?php echo ($user['User']['usernameK']); ?></td>
 											<td><?php echo ($user['User']['username']); ?></td>

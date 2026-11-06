@@ -60,6 +60,12 @@
 									<?php echo $this->Form->input('syain_cd',['label'=>false, 'div'=>false, 'class'=>'form-control']); ?>
 								</div>
 							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">表示順</label>
+								<div class="col-sm-3">
+									<?php echo $this->Form->input('displayno',['label'=>false, 'div'=>false, 'class'=>'form-control', 'type'=>'number', 'min'=>0, 'default'=>0]); ?>
+								</div>
+							</div>
 
 							<div class="form-group">
 								<label class="col-sm-2 control-label">会社</label>
