@@ -133,7 +133,7 @@
 				<div class="box col-md-12">
 					<div class="box-inner">
 						<div class="box-header well">
-							<h2>勤怠実績詳細</h2>
+							<h2><?php if ($targetUserName !== null) { echo h($targetUserName) . '　'; } ?>勤怠実績詳細</h2>
 						</div>
 						<div class="box-content row">
 							<div class="col-lg-12 col-md-12">
@@ -161,9 +161,12 @@
 											<tr>
 												<th colspan="2" style="color:#ff3399;text-align:center!important;"></th>
 												<th colspan="7" style="color:#ff3399;text-align:center!important;"></th>
-												<th colspan="2" style="color:#ff3399;text-align:center!important;">夜勤</th>
-												<th colspan="2" style="color:#ff3399;text-align:center!important;">通常残業</th>
-												<th colspan="2" style="color:#ff3399;text-align:center!important;">乗務残業</th>
+												<th colspan="1" style="color:#ff3399;text-align:center!important;">夜勤</th>
+												<th colspan="1" style="color:#ff3399;text-align:center!important;">同乗教育</th>
+												<th colspan="1" style="color:#ff3399;text-align:center!important;">他部署5</th>
+												<th colspan="1" style="color:#ff3399;text-align:center!important;">他部署10</th>
+												<th colspan="1" style="color:#ff3399;text-align:center!important;">通常残業</th>
+												<th colspan="1" style="color:#ff3399;text-align:center!important;">乗務残業</th>
 												<th colspan="1" style="color:#ff3399;text-align:center!important;">電話</th>
 											</tr>
 										</thead>
@@ -274,15 +277,40 @@
 															echo '<td colspan="2"></td>';
 															echo '<td colspan="7"></td>';
 														}
-														echo '<td colspan="2" align="center">';
+														echo '<td colspan="1" align="center">';
 														//夜勤歩合
 														if($kintaitran['Kintaitran']['jyoumushinyaflg']){
 															echo 'あり';
 														}else{
 															echo '　';
 														}
+														echo '</td>';
+														echo '<td colspan="1" align="center">';
+														//同乗教育
+														if($kintaitran['Kintaitran']['doujyouflg']){
+															echo 'あり';
+														}else{
+															echo '　';
+														}
+														echo '</td>';
+														echo '<td colspan="1" align="center">';
+														//他部署応援5000
+														if($kintaitran['Kintaitran']['tabusyo1flg']){
+															echo '5000';
+														}else{
+															echo '　';
+														}
+														echo '</td>';
+														echo '<td colspan="1" align="center">';
+														//他部署応援10000
+														if($kintaitran['Kintaitran']['tabusyo2flg']){
+															echo '10000';
+														}else{
+															echo '　';
+														}
 														echo '</td>
-														<td colspan="2" align="center">';
+
+														<td colspan="1" align="center">';
 														//通常残業（職員用）
 														if($kintaitran['Kintaitran']['zangyoflg']){
 															echo 'あり';
@@ -290,7 +318,7 @@
 															echo '　';
 													 	}
 														echo '</td>
-														<td colspan="2" align="center">';
+														<td colspan="1" align="center">';
 														//乗務残業（職員用）
 														if($kintaitran['Kintaitran']['jyoumuflg']){
 															echo 'あり';

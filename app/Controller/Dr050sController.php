@@ -24,11 +24,41 @@ class Dr050sController extends AppController {
  *
  * @return void
  */
-	public function index() {
+	public function index($selectym1 = null, $users_id = null) {
 		$date = new DateTime();
 
 		if ($this->request->is('post')) {
 			list($date,$date2) = $this->SelectData->date_select_month($this->request->data('selectym1'));
+		} elseif ($selectym1) {
+			try {
+				$date = new DateTime($selectym1);
+			} catch (Exception $e) {
+				throw new NotFoundException(__('Invalid month'));
+			}
+		}
+
+		// Host050sからは、対象社員IDを指定して個人別の勤怠を表示する。
+		// 運転手は従来どおり自分自身の勤怠だけを参照できる。
+		$target_users_id = $this->Auth->user('id');
+		$targetUserName = null;
+		if ($users_id !== null) {
+			if ($this->Auth->user('rolemasters_id') >= 30 || !ctype_digit((string)$users_id)) {
+				throw new NotFoundException(__('Invalid user'));
+			}
+
+			$targetUser = $this->User->find('first', [
+				'fields' => ['User.id', 'User.usernameK'],
+				'conditions' => [
+					'User.id' => $users_id,
+					'User.kaisyas_id' => $this->kaisyas_id,
+				],
+				'recursive' => -1,
+			]);
+			if (!$targetUser) {
+				throw new NotFoundException(__('Invalid user'));
+			}
+			$target_users_id = $targetUser['User']['id'];
+			$targetUserName = $targetUser['User']['usernameK'];
 		}
 
 		$select_month = $date->format('Y-m');
@@ -37,14 +67,14 @@ class Dr050sController extends AppController {
 		$lastday = new DateTime('last day of ' . $select_month);
 
 		$paramsDate = $date->format('Y-m-d');
-		$this->set(compact('paramsDate'));
+		$this->set(compact('paramsDate', 'targetUserName'));
 
 		$kintaitrans = $this->Kintaitran->find('all', [
 			'fields' => [
 				// 'Kintaitran.kintaidate'
 			],
 			'conditions' => [
-				'Kintaitran.users_id' => $this->Auth->user('id'),
+				'Kintaitran.users_id' => $target_users_id,
 				'Kintaitran.kintaidate >=' => $firstday->format('Y-m-d'),
 				'Kintaitran.kintaidate <=' => $lastday->format('Y-m-d'),
 			],

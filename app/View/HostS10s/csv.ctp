@@ -1,4 +1,8 @@
 <?php
+// 20261107 他部署応援、同乗教育を集計
+$doujyou_kingaku = 1250;
+$tabusyo5_kinngaku = 5000;
+$tabusyo10_kingaku = 10000;
 // 20250627 教育時間を最終カラムに追加
 /*
  * 20240331 定時時間と８ｈの差分は１．０倍で計算
@@ -59,8 +63,9 @@ $i=0;
 		]);
 		$this->Csv->addField($posts['Calendarusermaster']['baseday']); //4-要勤務日数
 		//dummy test $this->Csv->addField(23); //4-要勤務日数
-
-		$syukkinday = $syukkin_cnt = $syukkin = $kekkin = $yukyu = $tokukyu = $daikyu = $kyujitsusyukkin = 0;
+		//20261107 合計用変数追加
+		$total_doujyou_su = $total_tabusyo5_su = $total_tabusyo10_su = $syukkinday = $syukkin_cnt = $syukkin = $kekkin = $yukyu = $tokukyu = $daikyu = $kyujitsusyukkin = 0;
+		$total_doujyou_kingaku = $total_tabusyo_kingaku = 0;
 		$guard_1 = $guard_2 = $guard_3 = 0;
 		$daitokukyu = 0;
 		$total_teigakuzangyojikan = $total_teigakuzangyoshinya = $teigakuzangyojikan = $teigakuzangyoshinya = $zangyototal = $zangyototal_shinya = $so_heijitsuzangyo = $chisou_kei = $chisou_sa = $heijitsuzangyo_nashi = $heijitsuzangyo = $heijitsushinya = $kyujitsuzangyo = $kyujitsushinya = $houteikyujitsu = $houteikyujitsushinya = $heijitsuzangyo_goukei = '00:00';
@@ -237,7 +242,16 @@ $i=0;
 				$jyoumushinya2 = $jyoumushinya2 + ($basetanka025 * 2);
 			}
 			*/
-
+			//20261107 他部署応援回数を集計、同乗教育も集計
+			if($kintaitran['doujyouflg']==1){
+				$total_doujyou_su = $total_doujyou_su + 1;
+			}
+			if($kintaitran['tabusyo1flg']==1){
+				$total_tabusyo5_su = $total_tabusyo5_su + 1;
+			}
+			if($kintaitran['tabusyo2flg']==1){
+				$total_tabusyo10_su = $total_tabusyo10_su + 1;
+			}
 			$hougaikingaku = $hougaikingaku + $kintaitran['hougaikingaku'];
 			$houteikingaku = $houteikingaku + $kintaitran['houteikingaku'];
 		}
@@ -667,6 +681,11 @@ $i=0;
 		$this->Csv->addField($sou_zan_sa); //残業時間から６０をひいたもの：残業差
 		//20250627 add
 		$this->Csv->addField($kyouiku_time);  //教育時間
+		//20261107 ２項目　追加
+		$total_doujyou_kingaku = $total_doujyou_su * $doujyou_kingaku;
+		$total_tabusyo_kingaku = ($total_tabusyo5_su * $tabusyo5_kinngaku) + ($total_tabusyo10_su * $tabusyo10_kingaku);
+		$this->Csv->addField($total_doujyou_kingaku);  //同乗教育
+		$this->Csv->addField($total_tabusyo_kingaku);  //他部署合計
 		
 		$this->Csv->endRow();
 	  }

@@ -100,7 +100,10 @@
 									<th colspan="1" style="color:#ff3399;text-align:center!important;">乗務残業</th>
 									<th colspan="1" style="color:#ff3399;text-align:center!important;">電話</th>
 									<th colspan="1" style="color:#ff3399;text-align:center!important;">4h連続</th>
-									<th colspan="6" style="color:#ff3399;text-align:center!important;"></th>
+									<th colspan="1" style="color:#ff3399;text-align:center!important;">同乗教育</th>
+									<th colspan="1" style="color:#ff3399;text-align:center!important;">他部署5</th>
+									<th colspan="1" style="color:#ff3399;text-align:center!important;">他部署10</th>
+									<th colspan="3" style="color:#ff3399;text-align:center!important;"></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -111,7 +114,10 @@
 									$yoko_zangyo_gokei = '00:00';
 									echo '<tr>';
 									echo '<td>';
-										echo $userdetail['User']['usernameK'];
+										echo $this->Html->link(
+											$userdetail['User']['usernameK'],
+											['controller' => 'Dr050s', 'action' => 'index', substr($paramsDate, 0, 7), $userdetail['User']['id']]
+										);
 									echo '</td>';
 								if($userdetail['Kintaitran']){
 									if(substr($userdetail['Kintaitran'][0]['timestart'],0,5) != '00:00'){
@@ -255,16 +261,40 @@
 										}else{
 											echo '';
 										}
-										echo '</td>
-										<td colspan="1" align="center">';
+										echo '</td>';
+										echo '<td colspan="1" align="center">';
 										//4h連続（職員用）
 										if($userdetail['Kintaitran'][0]['shiharaisuryo']){
 											echo '4h';
 										}else{
 											echo '';
 										}
-										echo '</td>
-										<td colspan="5" align="left">';
+										echo '</td>';
+										echo '<td colspan="1" align="center">';
+										//同乗教育
+										if($userdetail['Kintaitran'][0]['doujyouflg']){
+											echo 'あり';
+										}else{
+											echo '';
+										}
+										echo '</td>';
+										echo '<td colspan="1" align="center">';
+										//他部署5000
+										if($userdetail['Kintaitran'][0]['tabusyo1flg']){
+											echo '5000';
+										}else{
+											echo '';
+										}
+										echo '</td>';
+										echo '<td colspan="1" align="center">';
+										//他部署5000
+										if($userdetail['Kintaitran'][0]['tabusyo2flg']){
+											echo '10000';
+										}else{
+											echo '';
+										}
+										echo '</td>';
+										echo '<td colspan="2" align="left">';
 									//個別手当の明細
 							 		$kintaitranskobetsuteatemasters = ClassRegistry::init('KintaitranKobetsuteatemaster');
 							 		$kintaitranskobetsuteatemastersdata = [];
