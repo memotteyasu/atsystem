@@ -1,5 +1,5 @@
 <?php
-// 20261107 他部署応援、同乗教育を集計
+// 20261107 他部署応援、同乗教育を集計、有給歩合も追加
 $doujyou_kingaku = 1250;
 $tabusyo5_kinngaku = 5000;
 $tabusyo10_kingaku = 10000;
@@ -20,7 +20,7 @@ $tabusyo10_kingaku = 10000;
 //テーブル読み込み
 	$datacheck = 0;
 	$calenderusermaster = ClassRegistry::init('Calendarusermaster');
-$i=0;
+	$i=0;
 	//会社マスタからガソリン等の単価を取得
 	$kaisya = ClassRegistry::init('Kaisya');
 	$kaisyadata = [];
@@ -63,8 +63,8 @@ $i=0;
 		]);
 		$this->Csv->addField($posts['Calendarusermaster']['baseday']); //4-要勤務日数
 		//dummy test $this->Csv->addField(23); //4-要勤務日数
-		//20261107 合計用変数追加
-		$total_doujyou_su = $total_tabusyo5_su = $total_tabusyo10_su = $syukkinday = $syukkin_cnt = $syukkin = $kekkin = $yukyu = $tokukyu = $daikyu = $kyujitsusyukkin = 0;
+		//20261107 合計用変数追加、有休歩合追加
+		$yukyu_buai = $total_doujyou_su = $total_tabusyo5_su = $total_tabusyo10_su = $syukkinday = $syukkin_cnt = $syukkin = $kekkin = $yukyu = $tokukyu = $daikyu = $kyujitsusyukkin = 0;
 		$total_doujyou_kingaku = $total_tabusyo_kingaku = 0;
 		$guard_1 = $guard_2 = $guard_3 = 0;
 		$daitokukyu = 0;
@@ -686,6 +686,13 @@ $i=0;
 		$total_tabusyo_kingaku = ($total_tabusyo5_su * $tabusyo5_kinngaku) + ($total_tabusyo10_su * $tabusyo10_kingaku);
 		$this->Csv->addField($total_doujyou_kingaku);  //同乗教育
 		$this->Csv->addField($total_tabusyo_kingaku);  //他部署合計
+		//20261107 有休歩合計算
+		// 走行歩合金額 ÷ 総労働時間 × 1日の所定労働時間 × 有給取得日数
+		$sou_roudou_hour = $this->Format->chg_integer($sou_roudou);
+		if($yukyu > 0 && $sou_roudou_hour > 0){
+			$yukyu_buai = round(($soukoukiro_kei / $sou_roudou_hour) * 7.75 * $yukyu);
+		}
+		$this->Csv->addField($yukyu_buai);  //有休歩合
 		
 		$this->Csv->endRow();
 	  }
