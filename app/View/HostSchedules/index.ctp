@@ -31,7 +31,7 @@
 									<?php foreach ($schedules as $schedule): ?>
 										<tr>
 											<td><?php echo h($schedule['Schedule']['scheduledate']); ?></td>
-											<td><?php echo h($schedule['User']['usernameK']); ?></td>
+											<td><?php echo !empty($schedule['Schedule']['kaisyas_id']) ? '社内全体' : h($schedule['User']['usernameK']); ?></td>
 											<td><span class="label" style="background-color:<?php echo h($schedule['Schedule']['displaycolor']); ?>; color:#333;"><?php echo h($schedule['Schedule']['schedulename']); ?></span></td>
 											<td><?php echo h($schedule['Schedule']['note']); ?></td>
 											<td class="text-right">

@@ -5,6 +5,10 @@
 *.sql
 !app/Config/Schema/add_users_displayno.sql
 !app/Config/Schema/create_employeeschedules.sql
+!app/Config/Schema/20261109_add_company_schedule_to_employeeschedules.sql
+!app/Config/Schema/create_vehicleschedules.sql
+!app/Config/Schema/create_companyvehicles.sql
+!app/Config/Schema/20261109_switch_vehicleschedules_to_companyvehicles.sql
 
 # CakePHP
 app/tmp/*
@@ -15,7 +19,3 @@ app/tmp/*
 
 # database config
 app/Config/database.php
-
-*.sql
-!app/Config/Schema/add_users_displayno.sql
-!app/Config/Schema/create_employeeschedules.sql

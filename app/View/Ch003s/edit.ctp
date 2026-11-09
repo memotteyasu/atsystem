@@ -324,6 +324,14 @@
 			<?php echo $this->Form->end(); ?>
 
 					<?php
+						if (!empty($editReturnUrl)) {
+							echo $this->Html->link('戻る', $editReturnUrl, [
+								'class' => 'btn btn-default'
+							]);
+						}
+					?>
+
+					<?php
 						echo $this->Html->link('<span class="glyphicon glyphicon-list-alt icon-white" aria-hidden="true"></span>'.(' 工程内容'),[
 							'action' => 'add',
 							'controller' => 'Ch050s',

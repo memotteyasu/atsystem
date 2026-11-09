@@ -32,6 +32,13 @@ class Flgmaster extends AppModel {
         ]);
         return $flgmasters;
     }
+
+    public function partnerRequestStatusId($name) {
+        return $this->field('id', array(
+            'Flgmaster.flggroup' => 6,
+            'Flgmaster.flgname' => $name,
+        ));
+    }
 /**
  * Validation rules
  *

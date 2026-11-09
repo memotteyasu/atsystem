@@ -617,6 +617,34 @@ class Processtran extends AppModel {
 	        ],
 	        'order' => ''
 	    ],
+		'PartnerBranch' => [
+			'className' => 'Branchmaster',
+			'foreignKey' => 'partner_branchmasters_id',
+			'conditions' => '',
+			'fields' => ['id', 'branchname'],
+			'order' => ''
+		],
+		'PartnerRequestStatus' => [
+			'className' => 'Flgmaster',
+			'foreignKey' => 'partner_request_flgmasters_id',
+			'conditions' => ['PartnerRequestStatus.flggroup' => 6],
+			'fields' => ['id', 'flgname'],
+			'order' => ''
+		],
+		'PartnerRequestedUser' => [
+			'className' => 'User',
+			'foreignKey' => 'partner_requested_user_id',
+			'conditions' => '',
+			'fields' => ['id', 'usernameK'],
+			'order' => ''
+		],
+		'PartnerRespondedUser' => [
+			'className' => 'User',
+			'foreignKey' => 'partner_responded_user_id',
+			'conditions' => '',
+			'fields' => ['id', 'usernameK'],
+			'order' => ''
+		],
 		
 	    'Productcontainer' => [
 			'className' => 'Productcontainer',

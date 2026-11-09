@@ -383,7 +383,53 @@ class Ch030sController extends AppController {
 
         $ordertrans = $this->SelectData->data_select_conditionsch030s($paramsDate,$did,$branchgroups_id,$this->kaisyas_id);
 
-        $this->set(compact('ordertrans','carmasters'));
+        // drtops と同じ条件（主乗務員・予定日登録済み・工程日時順）で、
+        // 手配明細の「次便予定」に使う工程を取得する。
+        $driverIds = [];
+        foreach ($ordertrans as $ordertran) {
+            foreach ($ordertran['Processtran'] as $processtran) {
+                if (!empty($processtran['pdriver1id'])) {
+                    $driverIds[$processtran['pdriver1id']] = $processtran['pdriver1id'];
+                }
+            }
+        }
+        $driverNextOrders = [];
+        if (!empty($driverIds)) {
+            $driverNextOrders = $this->Processtran->find('all', [
+                'fields' => [
+                    'Processtran.id',
+                    'Processtran.ordertrans_id',
+                    'Processtran.pdriver1id',
+                    'Processtran.processstartdate',
+                    'Processtran.processstarttime',
+                    'Processtran.timenote',
+                    'Ordertran.kaisen',
+                    'Workdetailmaster.workname',
+                    'Workplace.workplaceshortname',
+                ],
+                'conditions' => [
+                    'Processtran.pdriver1id' => array_values($driverIds),
+                    'Processtran.processstartdate >=' => $paramsDate,
+                    'Processtran.scheduledate !=' => null,
+                    'Processtran.delflg' => 0,
+                ],
+                'contain' => [
+                    'Ordertran' => ['fields' => ['id', 'kaisen']],
+                    'Workdetailmaster',
+                    'Workplace',
+                ],
+                'order' => [
+                    'Processtran.pdriver1id' => 'asc',
+                    'Ordertran.kaisen' => 'asc',
+                    'Processtran.processstartdate' => 'asc',
+                    'Processtran.processstarttime' => 'asc',
+                    'Processtran.id' => 'asc',
+                ],
+                'recursive' => 0,
+            ]);
+        }
+
+        $this->set(compact('ordertrans','driverNextOrders','carmasters'));
     }
 
     public function pdftehaini() {

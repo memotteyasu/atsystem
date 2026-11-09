@@ -13,6 +13,7 @@ class Schedule extends AppModel {
 	public $validate = array(
 		'users_id' => array(
 			'rule' => 'numeric',
+			'allowEmpty' => true,
 			'message' => '従業員を選択してください。'
 		),
 		'scheduledate' => array(

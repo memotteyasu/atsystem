@@ -292,6 +292,7 @@ class Ordertran extends AppModel {
 				'Ordertran.loadingtime',
 				'Ordertran.deliverydate',
 				'Ordertran.deliverytime',
+				'Ordertran.kaisen',
 				'Ordertran.branchmasters_id',
 			    'Workplace1.workplaceshortname',
 			    'Workplace2.workplaceshortname',
@@ -336,6 +337,10 @@ class Ordertran extends AppModel {
 						'Processtran.timenote',
 						'Processtran.ref_no',
 						'Processtran.workorder_no',
+						'Processtran.pdriver1id',
+						'Processtran.pdriver2id',
+						'Processtran.partner_branchmasters_id',
+						'Processtran.partner_request_flgmasters_id',
 					    'PDriver1.usernameK',
 					    'PDriver2.usernameK',
 					    'Processtran.confirmdate'
@@ -344,16 +349,20 @@ class Ordertran extends AppModel {
 					'Workplace',
 					'Productcontainer',
 				    'PDriver1',
-				    'PDriver2'
+					    'PDriver2',
+						'PartnerBranch',
+						'PartnerRequestStatus'
 				],
 			    'Workplace1',
 			    'Workplace2',
 			],
 			'order' => [
-				//'Ordertran.departmentmasters_id' => 'asc',
-				//'Shippermaster.displayno' => 'asc',
+				// 手配明細・配車画面は車両マスタで設定した表示順を最優先にする。
+				// displayno は荷主との適合性を踏まえて配車係が管理している順序。
 				'Carmaster.displayno' => 'asc',
-			    'Ordertran.kaisen' => 'asc'
+				'Carmaster.id' => 'asc',
+			    'Ordertran.kaisen' => 'asc',
+			    'Ordertran.id' => 'asc'
 			],
 			'recursive' => 0
 		]);
@@ -423,8 +432,11 @@ class Ordertran extends AppModel {
 			    'Workplace2',
 			],
 			'order' => [
-				'Ordertran.displayno' => 'asc',
+				// 営業所グループ手配明細は、荷主適合を加味して車両マスタで設定した表示順を使う。
+				'Carmaster.displayno' => 'asc',
+				'Carmaster.id' => 'asc',
 			    'Ordertran.kaisen' => 'asc',
+			    'Ordertran.id' => 'asc',
 			],
 			'recursive' => 0
 		]);

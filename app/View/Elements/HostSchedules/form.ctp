@@ -4,9 +4,12 @@
 <?php echo $this->Form->create('Schedule', array('class' => 'form-horizontal', 'novalidate' => true)); ?>
 <?php echo $this->Form->input('id', array('type' => 'hidden')); ?>
 <div class="form-group">
-	<label class="col-sm-2 control-label">従業員</label>
+	<label class="col-sm-2 control-label">対象</label>
 	<div class="col-sm-4">
-		<?php if (!empty($fixedScheduleUser)): ?>
+		<?php if (!empty($fixedCompanySchedule)): ?>
+			<input type="hidden" name="company_schedule" value="1">
+			<p class="form-control-static">社内全体</p>
+		<?php elseif (!empty($fixedScheduleUser)): ?>
 			<?php echo $this->Form->input('users_id', array('type' => 'hidden', 'value' => $fixedScheduleUser['id'])); ?>
 			<input type="hidden" name="fixed_user" value="1">
 			<p class="form-control-static"><?php echo h($fixedScheduleUser['name']); ?></p>

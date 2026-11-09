@@ -142,6 +142,24 @@ class Ch003sController extends AppController {
 		$backdata2 = $this->Session->read('BackData1');
 		$this->Session->write('BackData2', $backdata2);
 		$backpage = $this->SelectData->backpage_select2($backdata2,$this->page);
+		// 編集画面を開いた遷移元をオーダー単位で保存する。
+		// POST 時の Referer は編集画面自身になるため、初回 GET のときだけ記録する。
+		$returnUrlKey = 'Ch003s.editReturnUrl.'.$id;
+		if ($this->request->is('get')) {
+			$referer = $this->referer(null, true);
+			$refererPath = $referer ? parse_url($referer, PHP_URL_PATH) : null;
+			if ($referer && $referer !== '/' && $refererPath && !preg_match('#/Ch003s/edit(?:/|$)#i', $refererPath)) {
+				$this->Session->write($returnUrlKey, $referer);
+			} elseif ($referer === '/' || !$this->Session->check($returnUrlKey)) {
+				// 直接URLを開いた場合だけ、従来の flg を安全な既定戻り先として使う。
+				$fallbackReturnUrl = ($flg == 5)
+					? Router::url(['controller' => 'Ch050s', 'action' => 'add', $id])
+					: Router::url(['controller' => 'Ch003s', 'action' => 'index']);
+				$this->Session->write($returnUrlKey, $fallbackReturnUrl);
+			}
+		}
+		$editReturnUrl = $this->Session->read($returnUrlKey);
+		$this->set(compact('editReturnUrl'));
 
 		// $did = 4;
 		$did = $this->did;
@@ -247,9 +265,14 @@ class Ch003sController extends AppController {
 				]);
 
 				$this->Flash->success('オーダーを編集しました。');
-				// $backpage = $this->Session->read('BackData2.Page');
-				$conditions = $this->SelectData->backpage_select($id,$flg,$backpage);
-				return $this->redirect($conditions);
+					if ($this->Session->check($returnUrlKey)) {
+						$returnUrl = $this->Session->read($returnUrlKey);
+						$this->Session->delete($returnUrlKey);
+						return $this->redirect($returnUrl);
+					}
+					// 旧来のセッションしかないケースのフォールバック。
+					$conditions = $this->SelectData->backpage_select($id,$flg,$backpage);
+					return $this->redirect($conditions);
 			} else {
 				$this->Flash->error('オーダー編集に失敗しました。');
 			}
@@ -431,6 +454,13 @@ class Ch003sController extends AppController {
 
 	    if ($this->request->is('post')) {
 	        $this->Ordertran->create();
+		        // Ch003sの登録フォームには数量入力がないため、NOT NULLのamountを明示的に初期化する。
+		        if (!isset($this->request->data['Ordertran']['amount']) || $this->request->data['Ordertran']['amount'] === '') {
+		            $this->request->data['Ordertran']['amount'] = 0;
+		        }
+		        // 工程保存後に実際の場所IDで更新する。初回INSERT用には未設定値を0で保持する。
+		        $this->request->data['Ordertran']['workplaces_id1'] = 0;
+		        $this->request->data['Ordertran']['workplaces_id2'] = 0;
 	        $this->request->data['Ordertran']['kaisyas_id'] = $this->params['named']['cid'];
 			$this->request->data['Ordertran']['shippermasters_id'] = $this->params['named']['sid'];
 			$this->request->data['Ordertran']['productdetailmasters_id'] = $this->params['named']['pid'];
@@ -455,8 +485,8 @@ class Ch003sController extends AppController {
 	            $orderstarttime = '00:00';
 	            $orderenddate = $date->format('Y-m-d');
 	            $orderendtime = '23:59';
-	            $workplaceid1 = null;
-	            $workplaceid2 = null;
+		            $workplaceid1 = 0;
+		            $workplaceid2 = 0;
 				$work_container_no = null;
 
 	            foreach ($this->request->data['Processtran'] as $processtran) {

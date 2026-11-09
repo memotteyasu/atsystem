@@ -18,6 +18,7 @@
                             <ul class="nav nav-pills nav-stacked">
 				              <li><?php echo $this->Html->link('受注カレンダ', array('controller' => 'Ch003s','action'=>'index')); ?></li>
 				              <li><?php echo $this->Html->link('未承認一覧', array('controller' => 'Ch050s','action'=>'index')); ?></li>
+				              <li><?php echo $this->Html->link('配車計画ボード', array('controller' => 'Ch031s','action'=>'index')); ?></li>
 				              <li><?php echo $this->Html->link('乗務員選択', array('controller' => 'Ch030s','action'=>'index')); ?></li>
 				              <!-- <li><?php echo $this->Html->link('乗務員未確認', array('controller' => 'Ch091s','action'=>'index')); ?></li> -->
 				              <li><?php echo $this->Html->link('出荷実績',['controller'=>'Ch080s','action'=>'index']); ?></li>
@@ -142,6 +143,7 @@
 						?>
 								<li><?php echo $this->Html->link('作業マスタ',array('controller'=>'HostWorkdetailmasters','action'=>'index')); ?></li>
 								<li><?php echo $this->Html->link('車両マスタ',array('controller'=>'HostTruckmasters','action'=>'index')); ?></li>
+								<li><?php echo $this->Html->link('営業車マスタ',array('controller'=>'CompanyVehicles','action'=>'index')); ?></li>
 								<li><?php echo $this->Html->link('価格マスタ',array('controller'=>'HostPricemasters','action'=>'index')); ?></li>
 				                <li><?php echo $this->Html->link('★ﾆﾁｺﾝ価格付替',array('controller'=>'HostPricemaster2s','action'=>'index')); ?></li>
 								<li><?php echo $this->Html->link('作業場所マスタ', ['controller'=>'HostWorkplaces','action'=>'index']); ?></li>
