@@ -27,7 +27,7 @@
 			.host-weekly-schedule .schedule-cell-link { display: block; min-height: 17px; color: inherit; text-decoration: none; }
 			.host-weekly-schedule .schedule-cell-link:hover { background-color: #f5f5f5; text-decoration: none; }
 			.host-weekly-schedule .schedule-entry { display: block; margin: 1px 0; padding: 1px 2px; border: 2px solid; background-color: transparent; color: #333; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-			.host-weekly-schedule .company-schedule-row td { background-color: #f5fbff; }
+			.host-weekly-schedule .company-schedule-row td { background-color: #e1f3ff; }
 			.host-weekly-schedule .company-schedule-row .employee-name { color: #003c78; font-weight: bold; }
 			.host-weekly-schedule .saturday { background: #f5f9ff; }
 			.host-weekly-schedule .sunday { background: #fff6f6; }

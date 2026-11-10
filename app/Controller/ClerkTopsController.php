@@ -29,7 +29,7 @@ class ClerkTopsController extends AppController {
 	public function index() {
 	    $date = new DateTime();
 	    $weekOffset = isset($this->request->query['week_offset']) ? (int)$this->request->query['week_offset'] : 0;
-	    $weekOffset = max(0, min($weekOffset, 11));
+	    $weekOffset = max(-11, min($weekOffset, 11));
 	    $weekStart = new DateTime('today');
 	    $weekStart->modify('+' . ($weekOffset * 7) . ' days');
 	    $weekEnd = clone $weekStart;
@@ -37,7 +37,7 @@ class ClerkTopsController extends AppController {
 	    $weekDates = array();
 	    $weekOptions = array();
 	    $weekdayLabels = array('月', '火', '水', '木', '金', '土', '日');
-	    for ($i = 0; $i < 12; $i++) {
+	    for ($i = -11; $i < 12; $i++) {
 	$optionStart = new DateTime('today');
 	$optionStart->modify('+' . ($i * 7) . ' days');
 	$optionEnd = clone $optionStart;
@@ -105,6 +105,24 @@ class ClerkTopsController extends AppController {
 	$calendarEntriesByUserAndDate[$userId][$scheduleDate][] = array(
 		'name' => $employeeSchedule['Schedule']['schedulename'],
 		'color' => $employeeSchedule['Schedule']['displaycolor']
+	);
+	    }
+	    $companySchedules = $this->Schedule->find('all', array(
+	'fields' => array('Schedule.scheduledate', 'Schedule.schedulename', 'Schedule.displaycolor'),
+	'conditions' => array(
+		'Schedule.kaisyas_id' => $this->Auth->user('kaisyas_id'),
+		'Schedule.scheduledate >=' => $weekStart->format('Y-m-d'),
+		'Schedule.scheduledate <=' => $weekEnd->format('Y-m-d'),
+		'Schedule.delflg' => 0
+	),
+	'recursive' => -1
+	    ));
+	    $companyCalendarEntriesByDate = array();
+	    foreach ($companySchedules as $companySchedule) {
+	$scheduleDate = $companySchedule['Schedule']['scheduledate'];
+	$companyCalendarEntriesByDate[$scheduleDate][] = array(
+		'name' => $companySchedule['Schedule']['schedulename'],
+		'color' => $companySchedule['Schedule']['displaycolor']
 	);
 	    }
 	    $receptionmessages = $this->Receptionmessage->find('all',[
@@ -183,7 +201,7 @@ class ClerkTopsController extends AppController {
 		]);
 */
 
-	    $this->set(compact('personalmessages','gyoumumessages','employeeholidays','receptionmessages','weekStart','weekEnd','weekDates','weekOptions','weekOffset','scheduleUsers','calendarEntriesByUserAndDate'));
+	    $this->set(compact('personalmessages','gyoumumessages','employeeholidays','receptionmessages','weekStart','weekEnd','weekDates','weekOptions','weekOffset','scheduleUsers','calendarEntriesByUserAndDate','companyCalendarEntriesByDate'));
 	}
 
 	public function addpersonalmessage(){

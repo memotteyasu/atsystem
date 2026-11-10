@@ -24,6 +24,8 @@
 		<style>
 			.clerk-weekly-schedule-controls { margin-bottom: 8px; white-space: nowrap; }
 			.clerk-weekly-schedule-controls select { display: inline-block; width: auto; min-width: 150px; vertical-align: middle; }
+			.clerk-weekly-schedule-controls .previous-week-button { margin-right: 4px; vertical-align: middle; }
+			.clerk-weekly-schedule-controls .next-week-button, .clerk-weekly-schedule-controls .vehicle-schedule-button { margin-left: 4px; vertical-align: middle; }
 			.clerk-schedule-management-link a { width: auto; padding: 2px 6px; }
 			.clerk-weekly-schedule { width: 100%; min-width: 680px; font-size: 11px; margin-bottom: 0; table-layout: fixed; }
 			.clerk-weekly-schedule th, .clerk-weekly-schedule td { padding: 4px 3px; text-align: center; vertical-align: middle; }
@@ -31,6 +33,8 @@
 			.clerk-weekly-schedule .schedule-cell-link { display: block; min-height: 17px; color: inherit; text-decoration: none; }
 			.clerk-weekly-schedule .schedule-cell-link:hover { background-color: #f5f5f5; text-decoration: none; }
 			.clerk-weekly-schedule .schedule-entry { display: block; margin: 1px 0; padding: 1px 2px; border: 2px solid; background-color: transparent; color: #333; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.clerk-weekly-schedule .company-schedule-row td { background-color: #e1f3ff; }
+			.clerk-weekly-schedule .company-schedule-row .employee-name { color: #003c78; font-weight: bold; }
 			.clerk-weekly-schedule .saturday { background: #f5f9ff; }
 			.clerk-weekly-schedule .sunday { background: #fff6f6; }
 		</style>
@@ -44,11 +48,22 @@
 					<div class="box-content">
 						<form action="<?php echo $this->Html->url(array('controller' => 'ClerkTops', 'action' => 'index')); ?>" method="get" class="clerk-weekly-schedule-controls">
 							<label for="week-offset">表示期間&nbsp;</label>
+							<?php if ((int)$weekOffset > -11): ?>
+								<?php echo $this->Html->link('前週', array('controller' => 'ClerkTops', 'action' => 'index', '?' => array('week_offset' => (int)$weekOffset - 1)), array('class' => 'btn btn-warning btn-sm previous-week-button')); ?>
+							<?php else: ?>
+								<button type="button" class="btn btn-warning btn-sm previous-week-button" disabled>前週</button>
+							<?php endif; ?>
 							<select name="week_offset" id="week-offset" class="form-control input-sm" onchange="this.form.submit()">
 								<?php foreach ($weekOptions as $value => $label): ?>
 									<option value="<?php echo h($value); ?>"<?php echo (int)$value === (int)$weekOffset ? ' selected' : ''; ?>><?php echo h($label); ?></option>
 								<?php endforeach; ?>
 							</select>
+							<?php if ((int)$weekOffset < 11): ?>
+								<?php echo $this->Html->link('次週', array('controller' => 'ClerkTops', 'action' => 'index', '?' => array('week_offset' => (int)$weekOffset + 1)), array('class' => 'btn btn-warning btn-sm next-week-button')); ?>
+							<?php else: ?>
+								<button type="button" class="btn btn-warning btn-sm next-week-button" disabled>次週</button>
+							<?php endif; ?>
+							<?php echo $this->Html->link('車両予定', array('controller' => 'VehicleSchedules', 'action' => 'index'), array('class' => 'btn btn-default btn-sm vehicle-schedule-button')); ?>
 						</form>
 						<div class="table-responsive">
 							<table class="table table-bordered table-condensed clerk-weekly-schedule">
@@ -59,6 +74,20 @@
 									<?php endforeach; ?>
 								</tr></thead>
 								<tbody>
+									<tr class="company-schedule-row">
+										<td class="employee-name">社内全体</td>
+										<?php foreach ($weekDates as $weekDate): ?>
+											<?php $calendarEntries = isset($companyCalendarEntriesByDate[$weekDate['date']]) ? $companyCalendarEntriesByDate[$weekDate['date']] : array(); ?>
+											<?php $scheduleAddUrl = $this->Html->url(array('controller' => 'HostSchedules', 'action' => 'add', '?' => array('company_schedule' => 1, 'scheduledate' => $weekDate['date']))); ?>
+											<td class="<?php echo empty($calendarEntries) ? ($weekDate['weekday'] === 6 ? 'saturday' : ($weekDate['weekday'] === 7 ? 'sunday' : '')) : ''; ?>">
+												<a href="<?php echo $scheduleAddUrl; ?>" class="schedule-cell-link" title="社内全体の予定を登録">
+													<?php foreach ($calendarEntries as $calendarEntry): ?>
+														<span class="schedule-entry" style="border-color:<?php echo h($calendarEntry['color']); ?>;" title="<?php echo h($calendarEntry['name']); ?>"><?php echo h($calendarEntry['name']); ?></span>
+													<?php endforeach; ?>
+												</a>
+											</td>
+										<?php endforeach; ?>
+									</tr>
 									<?php foreach ($scheduleUsers as $scheduleUser): ?>
 										<tr>
 											<td class="employee-name" title="<?php echo h($scheduleUser['User']['usernameK']); ?>"><?php echo h($scheduleUser['User']['usernameK']); ?></td>
