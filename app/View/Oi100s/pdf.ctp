@@ -73,12 +73,17 @@ $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 	$coverRows = [];
 	$coverTotal = 0;
 	foreach ($detailBranches as $detailBranch) {
-		$fare = 0;
+		$totalFare = 0;
+		$totalTolls = 0;
 		foreach ($detailBranch['details'] as $detail) {
-			$fare += !empty($detail['payment']) ? (int)$detail['payment'] : (int)$detail['price'];
+			$totalFare += !empty($detail['payment']) ? (int)$detail['payment'] : (int)$detail['price'];
+			$totalTolls += (int)$detail['tollfee'] + (int)$detail['handtollfee'];
 		}
-		$coverRows[] = ['company' => $detailBranch['label'], 'fare' => $fare];
-		$coverTotal += $fare;
+		// 明細の消費税込運賃（E）と同じく、通行料を除く運賃に消費税を加算する。
+		$fareExcludingTolls = $totalFare - $totalTolls;
+		$taxIncludedFare = $totalFare + (int)floor($fareExcludingTolls * 0.1);
+		$coverRows[] = ['company' => $detailBranch['label'], 'fare' => $taxIncludedFare];
+		$coverTotal += $taxIncludedFare;
 	}
 
 	$pdf->Ln(11);
@@ -109,7 +114,7 @@ $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 // 鏡は営業所ごとの運賃小計と合計のみを表示する。
 	$pdf->SetFontSize(12);
 	$pdf->MultiCell(85, 9, '会社名', 1, 'C', 0, 0, 10, '', true, 0, false, true, 9, 'B');
-	$pdf->MultiCell(55, 9, '運賃', 1, 'C', 0, 0, 95, '', true, 0, false, true, 9, 'B');
+	$pdf->MultiCell(55, 9, '消費税込運賃（E）', 1, 'C', 0, 0, 95, '', true, 0, false, true, 9, 'B');
 	$pdf->MultiCell(50, 9, '備考', 1, 'C', 0, 1, '', '', true, 0, false, true, 9, 'B');
 	foreach ($coverRows as $coverRow) {
 		$pdf->MultiCell(85, 9, $coverRow['company'], 1, 'L', 0, 0, 10, '', true, 0, false, true, 9, 'B');
