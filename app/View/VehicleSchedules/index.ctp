@@ -4,6 +4,7 @@
 		<ul class="breadcrumb"><li><?php echo $this->Html->link('Top', array('controller' => 'HostTops', 'action' => 'index')); ?> <span class="divider">/</span> 車両予定<?php echo $this->Flash->render(); ?></li></ul>
 		<style>
 			.vehicle-schedule-controls { margin-bottom: 8px; white-space: nowrap; }
+			.vehicle-schedule-management-link a { width: auto; padding: 2px 6px; }
 			.vehicle-schedule-controls select { display: inline-block; width: auto; min-width: 150px; vertical-align: middle; }
 			.vehicle-schedule-controls .btn { margin-left: 4px; vertical-align: middle; }
 			.vehicle-weekly-schedule { width: 100%; min-width: 680px; font-size: 11px; table-layout: fixed; }
@@ -16,7 +17,7 @@
 			.vehicle-weekly-schedule .sunday { background: #fff6f6; }
 		</style>
 		<div class="row"><div class="box col-md-12"><div class="box-inner">
-			<div class="box-header well"><h2><i class="glyphicon glyphicon-road"></i> 営業車予定（<?php echo h($weekStart->format('n/j')); ?>〜<?php echo h($weekEnd->format('n/j')); ?>）</h2></div>
+			<div class="box-header well"><h2><i class="glyphicon glyphicon-road"></i> 営業車予定（<?php echo h($weekStart->format('n/j')); ?>〜<?php echo h($weekEnd->format('n/j')); ?>）</h2><div class="box-icon vehicle-schedule-management-link"><?php echo $this->Html->link('車両予定管理', array('action' => 'management'), array('class' => 'btn btn-xs btn-primary')); ?></div></div>
 			<div class="box-content">
 				<form action="<?php echo $this->Html->url(array('action' => 'index')); ?>" method="get" class="vehicle-schedule-controls">
 					<label for="week-offset">表示期間&nbsp;</label>

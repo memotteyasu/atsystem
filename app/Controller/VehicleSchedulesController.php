@@ -85,11 +85,69 @@ class VehicleSchedulesController extends AppController {
 		$this->set(compact('vehicles', 'fixedVehicle'));
 	}
 
+	public function management() {
+		$vehicleSchedules = $this->VehicleSchedule->find('all', array(
+			'conditions' => array(
+				'VehicleSchedule.kaisyas_id' => $this->Auth->user('kaisyas_id'),
+				'VehicleSchedule.scheduledate >=' => date('Y-m-d'),
+				'VehicleSchedule.delflg' => 0
+			),
+			'order' => array('VehicleSchedule.scheduledate' => 'asc', 'CompanyVehicle.displayno' => 'asc', 'CompanyVehicle.vehiclename' => 'asc'),
+			'recursive' => 0
+		));
+		$this->set(compact('vehicleSchedules'));
+	}
+
+	public function edit($id = null) {
+		$vehicleSchedule = $this->_scheduleForCurrentCompany($id);
+		if (!$vehicleSchedule) {
+			throw new NotFoundException('車両予定が見つかりません。');
+		}
+		$vehicles = $this->_vehicles();
+		if ($this->request->is(array('post', 'put'))) {
+			if (empty($this->request->data['VehicleSchedule']['companyvehicles_id']) || !isset($vehicles[$this->request->data['VehicleSchedule']['companyvehicles_id']])) {
+				$this->Flash->error('車両を選択してください。');
+			} else {
+				$this->request->data['VehicleSchedule']['kaisyas_id'] = $this->Auth->user('kaisyas_id');
+				$this->VehicleSchedule->id = $id;
+				if ($this->VehicleSchedule->save($this->request->data)) {
+					$this->Flash->success('車両予定を更新しました。');
+					return $this->redirect(array('action' => 'management'));
+				}
+				$this->Flash->error('車両予定を更新できませんでした。入力内容を確認してください。');
+			}
+		} elseif (!$this->request->data) {
+			$this->request->data = $vehicleSchedule;
+		}
+		$this->set(compact('vehicles'));
+	}
+
+	public function delete($id = null) {
+		$this->request->allowMethod('post', 'delete');
+		if ($this->_scheduleForCurrentCompany($id)) {
+			$this->VehicleSchedule->id = $id;
+			$this->VehicleSchedule->saveField('delflg', 1);
+			$this->Flash->success('車両予定を削除しました。');
+		}
+		return $this->redirect(array('action' => 'management'));
+	}
+
 	protected function _vehicles() {
 		return $this->CompanyVehicle->find('list', array(
 			'fields' => array('CompanyVehicle.id', 'CompanyVehicle.vehiclename'),
 			'conditions' => array('CompanyVehicle.kaisyas_id' => $this->Auth->user('kaisyas_id'), 'CompanyVehicle.delflg' => 0),
 			'order' => array('CompanyVehicle.displayno' => 'asc', 'CompanyVehicle.vehiclename' => 'asc'),
+			'recursive' => -1
+		));
+	}
+
+	protected function _scheduleForCurrentCompany($id) {
+		return $this->VehicleSchedule->find('first', array(
+			'conditions' => array(
+				'VehicleSchedule.id' => $id,
+				'VehicleSchedule.kaisyas_id' => $this->Auth->user('kaisyas_id'),
+				'VehicleSchedule.delflg' => 0
+			),
 			'recursive' => -1
 		));
 	}
