@@ -1,6 +1,6 @@
 <?php
 // 20261107 他部署応援、同乗教育を集計、有給歩合も追加
-$doujyou_kingaku = 1250;
+$doujyou_kingaku = 1500;
 $tabusyo5_kinngaku = 5000;
 $tabusyo10_kingaku = 10000;
 // 20250627 教育時間を最終カラムに追加
